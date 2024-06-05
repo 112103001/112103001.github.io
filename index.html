@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動遊戲</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff; /* 藍色系背景色 */
+            color: #333333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            background-color: #4169e1; /* 藍色系標題背景 */
+            margin: 0;
+            padding: 20px;
+            font-size: 2em;
+            color: #ffffff; /* 白色標題文字 */
+        }
+
+        #gameDescription {
+            display: block;
+            margin: 20px;
+        }
+
+        #startButton {
+            display: block;
+            margin: 20px auto;
+            background-color: #4169e1; /* 藍色系按鈕背景 */
+            background-image: linear-gradient(to bottom, #4169e1, #4682b4);
+            border: none;
+            border-radius: 5px;
+            color: #ffffff; /* 白色按鈕文字 */
+            cursor: pointer;
+            font-size: 1em;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        #startButton:hover {
+            background-color: #4682b4; /* 按鈕懸停顏色 */
+        }
+
+        #scene,
+        #story,
+        .button-container,
+        #ending,
+        #restartButton {
+            display: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-direction: row; /* 讓按鈕水平排列 */
+        }
+
+        .optionButton {
+            background-color: #4169e1;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .optionButton:hover {
+            background-color: #4682b4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="gameScreen">
+            <h1>互動遊戲</h1>
+            <p id="gameDescription">歡迎來到互動遊戲！在這個遊戲中，你將探索神秘的房間，遇到各種挑戰和冒險。你的選擇將決定你的命運，準備好了嗎？</p>
+            <input type="text" id="apiKeyInput" placeholder="輸入你的API Key">
+            <button id="startButton" onclick="startGame()">開始遊戲</button>
+            <div id="scene"></div>
+            <p id="story">你在一個神秘的房間裡醒來。在你面前有兩扇門。你要選擇哪一扇？</p>
+            <div class="button-container">
+                <button id="option1Button" class="optionButton" onclick="chooseOption(1)">門1</button>
+                <button id="option2Button" class="optionButton" onclick="chooseOption(2)">門2</button>
+            </div>
+            <div id="ending"></div>
+            <button id="restartButton" onclick="restartGame()" style="display: none; margin-top: 20px; background-color: #4169e1; background-image: linear-gradient(to bottom, #4169e1, #4682b4); border: none; border-radius: 5px; color: #ffffff; cursor: pointer; font-size: 1em; padding: 10px 20px; transition: background-color 0.3s ease;">重新開始</button>
+        </div>
+        <!-- Add the following images -->
+        <img id="door1" src="door1.png" alt="門1" style="display:none;">
+        <img id="door2" src="door2.png" alt="門2" style="display:none;">
+        <img id="treasure" src="treasure.png" alt="寶藏" style="display:none;">
+        <img id="monster" src="monster.png" alt="怪獸" style="display:none;">
+        <img id="forest" src="forest.png" alt="森林" style="display:none;">
+        <img id="castle" src="castle.png" alt="城堡" style="display:none;">
+        <img id="path" src="path.png" alt="小路" style="display:none;">
+    </div>
+
+    <script>
+        var currentScene = 0;
+        var apiKey = "";
+
+        function startGame() {
+            apiKey = document.getElementById('apiKeyInput').value;
+            if (apiKey !== "") {
+                document.getElementById('gameDescription').style.display = 'none';
+                document.getElementById('startButton').style.display = 'none';
+                document.getElementById('scene').style.display = 'block';
+                document.getElementById('story').style.display = 'block';
+                document.querySelector('.button-container').style.display = 'flex';
+                currentScene = 0;
+                document.getElementById('scene').innerHTML = `<img src="door1.png" alt="門1" style="width: 45%;"><img src="door2.png" alt="門2" style="width: 45%;">`;
+            } else {
+                alert("請輸入 API Key！");
+            }
+        }
+
+        function chooseOption(option) {
+            var scene = document.getElementById('scene');
+            var story = document.getElementById('story');
+            var ending = document.getElementById('ending');
+            var restartButton = document.getElementById('restartButton');
+            var buttonContainer = document.querySelector('.button-container');
+
+            switch (currentScene) {
+                case 0:
+                    if (option === 1) {
+                        scene.innerHTML = `<img src="treasure.png" alt="寶藏">`;
+                        story.innerText = "你看到了一個閃閃發光的寶箱，要打開嗎？";
+                        updateButtons("打開", "不打開");
+                        currentScene = 1;
+                    } else if (option === 2) {
+                        scene.innerHTML = `<img src="path.png" alt="小路">`;
+                        story.innerText = "你選擇了門2，走著走著你走進了一條小路。要選擇哪一邊？";
+                        updateButtons("左邊", "右邊");
+                        currentScene = 2;
+                    }
+                    break;
+                case 1:
+                    if (option === 1) {
+                        scene.innerHTML = `<img src="monster.png" alt="怪獸">`;
+                        story.innerText = "你打開了寶箱，裡面突然跳出一隻怪物，把你吃掉了。遊戲結束。";
+                        updateButtons("遊戲結束", "遊戲結束");
+                        currentScene = -1;
+                    } else if (option === 2) {
+                        scene.innerHTML = `<img src="empty.png" alt="空的房間">`;
+                        story.innerText = "你選擇了不打開寶箱，什麼也沒發生。";
+                        updateButtons("遊戲結束", "遊戲結束");
+                        currentScene = -1;
+                    }
+                    break;
+                case 2:
+                    if (option === 1) {
+                        scene.innerHTML = `<img src="forest.png" alt="森林">`;
+                        story.innerText = "你選擇了左邊的小路，走著走著你走進了一片森林。遊戲結束。";
+                        updateButtons("遊戲結束", "遊戲結束");
+                        currentScene = -1;
+                    } else if (option === 2) {
+                        scene.innerHTML = `<img src="castle.png" alt="城堡">`;
+                        story.innerText = "你選擇了右邊的小路，走到了城堡。你成功了！";
+                        updateButtons("恭喜你！你成功了！", "恭喜你！你成功了！");
+                        currentScene = -1;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if (currentScene === -1) {
+                buttonContainer.style.display = 'none';
+                ending.style.display = 'block';
+                restartButton.style.display = 'block';
+            }
+        }
+
+        function updateButtons(option1Text, option2Text) {
+            var option1Button = document.getElementById('option1Button');
+            var option2Button = document.getElementById('option2Button');
+            option1Button.innerText = option1Text;
+            option2Button.innerText = option2Text;
+        }
+
+        function restartGame() {
+            currentScene = 0;
+            document.getElementById('gameDescription').style.display = 'block';
+            document.getElementById('startButton').style.display = 'block';
+            document.getElementById('scene').style.display = 'none';
+            document.getElementById('scene').innerHTML = `<img src="start.png" alt="開始圖片">`;
+            document.getElementById('story').innerText = "你在一個神秘的房間裡醒來。在你面前有兩扇門。你要選擇哪一扇？";
+            document.getElementById('story').style.display = 'none';
+            document.getElementById('ending').style.display = 'none';
+            document.getElementById('restartButton').style.display = 'none';
+            document.querySelector('.button-container').style.display = 'none';
+            resetButtons();
+        }
+
+        function resetButtons() {
+            var option1Button = document.getElementById('option1Button');
+            var option2Button = document.getElementById('option2Button');
+            option1Button.innerText = "門1";
+            option2Button.innerText = "門2";
+            document.querySelector('.button-container').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
